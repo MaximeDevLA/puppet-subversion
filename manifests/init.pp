@@ -23,8 +23,8 @@ class subversion {
 #   $password (optional)	- Password to connect with
 #   $revision (optional)	- Revision to check out
 #   $trustcert (optional)	- Use --trust-server-cert
-#   $noauthcache (optional) - Use --no-auth-cache
-#
+#   $noauthcache (optional)     - Use --no-auth-cache
+#   $forceoverwrite (optional)  - Overwrite existing directories and files
 #
 #
 # Sample usage
@@ -48,7 +48,8 @@ class subversion {
 			$revision	= "HEAD",
 			$password	= false,
 			$trustcert	= false,
-			$noauthcache = false,
+			$noauthcache    = false,
+			$forceoverwrite = false,
 	) {
 
 
@@ -82,7 +83,10 @@ class subversion {
                 false => "",
                 default => "--no-auth-cache"
         }
-
+	$optforceoverwrite = $forceoverwrite ? {
+                false => "",
+                default => "--force"
+        }
 
 		$svnurl = "${urlmethod}${urlhost}${repopath}"
 		Exec { path	=> "/bin:/usr/bin:/usr/local/bin" }
@@ -90,7 +94,7 @@ class subversion {
 
 		exec { "$svnurl:$workingdir:checkout":
 			cwd	=> $workingdir,
-			command	=> "svn checkout $svnflags $optnoauthcache $optuser $optpassword $opttrustcert -r$revision $svnurl $workingdir",
+			command	=> "svn checkout $svnflags $optnoauthcache $optuser $optpassword $opttrustcert -r$revision $optforceoverwrite $svnurl $workingdir",
 			creates	=> "$workingdir/.svn",
 			require	=> Package["subversion"],
 		}
