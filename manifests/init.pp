@@ -14,8 +14,9 @@ class subversion {
 # Check out a subversion repository to a working directory
 #
 # Parameters:
-#   $repopath 			- Path to the repository
-#   $workingdir			- Local working directory to checkout to
+#   $repopath 				- Path to the repository
+#   $workingdir				- Local destination directory
+#   $tmpdir					- Local temporary directory to checkout to
 #   $ensure (optional)		- Set to updated to ensure latest svn update
 #   $host (optional)		- Subversion server hostname
 #   $method (optional)		- Protocol to use (http,https,svn..etc)
@@ -41,6 +42,7 @@ class subversion {
 	define checkout (
 			$repopath,
 			$workingdir,
+			$tmpdir,
 			$ensure		= "exists",
 			$host		= false,
 			$method		= false,
@@ -83,7 +85,8 @@ class subversion {
                 false => "",
                 default => "--no-auth-cache"
         }
-	$optforceoverwrite = $forceoverwrite ? {
+
+		$optforceoverwrite = $forceoverwrite ? {
                 false => "",
                 default => "--force"
         }
@@ -92,10 +95,16 @@ class subversion {
 		Exec { path	=> "/bin:/usr/bin:/usr/local/bin" }
 
 
-		exec { "$svnurl:$workingdir:checkout":
+		exec { "$svnurl:$tmpdir:checkout":
+			cwd	=> $tmpdir,
+			command	=> "svn checkout $svnflags $optnoauthcache $optuser $optpassword $opttrustcert -r$revision $optforceoverwrite $svnurl $tmpdir",
+			creates	=> "$tmpdir/.svn",
+			require	=> Package["subversion"],
+		}
+
+		exec { "$svnurl:$workingdir:export":
 			cwd	=> $workingdir,
-			command	=> "svn checkout $svnflags $optnoauthcache $optuser $optpassword $opttrustcert -r$revision $optforceoverwrite $svnurl $workingdir",
-			creates	=> "$workingdir/.svn",
+			command	=> "svn export $optuser $optpassword $tmpdir $workingdir",
 			require	=> Package["subversion"],
 		}
 
@@ -110,7 +119,5 @@ class subversion {
 
 
 	}
-
-
 
 }
