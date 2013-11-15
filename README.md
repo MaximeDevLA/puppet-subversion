@@ -2,6 +2,7 @@
 
 Released 20110608 - Craig Dunn - GPLv2  
 Patched to include --no-auth-cache option 20121109 - Michael Hall <pdxmph@gmail.com>
+Patched to checkout and then export (it removes .svn directories) 20131114 - Maxime Devalland
 
 Definition: svn::checkout
 
@@ -18,12 +19,14 @@ Check out a subversion repository to a working directory
 `$revision` (optional)	- Revision to check out  
 `$trustcert` (optional)	- Use --trust-server-cert  
 `$noauthcache` (optional) - Use --no-auth-cache
+`$forceoverwrite (optional)  - Overwrite existing directories and files on exportche
 
 
 ## Sample usage
 	subversion::checkout { "application/trunk": 
 		repopath	=> "/app/trunk",
 		workingdir	=> "/var/src/app",
+		tmpdir		=> "/tmp/svn-myrepo",
 		host		=> "subversion.local",
 		method		=> "http",
 		svnuser		=> "application",

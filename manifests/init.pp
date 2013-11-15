@@ -25,13 +25,14 @@ class subversion {
 #   $revision (optional)	- Revision to check out
 #   $trustcert (optional)	- Use --trust-server-cert
 #   $noauthcache (optional)     - Use --no-auth-cache
-#   $forceoverwrite (optional)  - Overwrite existing directories and files
+#   $forceoverwrite (optional)  - Overwrite existing directories and files on export
 #
 #
 # Sample usage
 #	subversion::checkout { "application/trunk":
 #		repopath	=> "/app/trunk",
 #		workingdir	=> "/var/src/app",
+#		tmpdir		=> "/tmp/svn-myrepo",
 #		host		=> "subversion.local",
 #		method		=> "http",
 #		svnuser		=> "application",
@@ -91,20 +92,25 @@ class subversion {
                 default => "--force"
         }
 
+        file { "${tmpdir}":
+                ensure => "directory",
+                require	=> Package["subversion"],
+        }
+
 		$svnurl = "${urlmethod}${urlhost}${repopath}"
 		Exec { path	=> "/bin:/usr/bin:/usr/local/bin" }
 
 
 		exec { "$svnurl:$tmpdir:checkout":
 			cwd	=> $tmpdir,
-			command	=> "svn checkout $svnflags $optnoauthcache $optuser $optpassword $opttrustcert -r$revision $optforceoverwrite $svnurl $tmpdir",
+			command	=> "svn checkout $svnflags $optnoauthcache $optuser $optpassword $opttrustcert -r$revision $svnurl $tmpdir",
 			creates	=> "$tmpdir/.svn",
 			require	=> Package["subversion"],
 		}
 
 		exec { "$svnurl:$workingdir:export":
 			cwd	=> $workingdir,
-			command	=> "svn export $optuser $optpassword $tmpdir $workingdir",
+			command	=> "svn export $optforceoverwrite $optuser $optpassword $tmpdir $workingdir",
 			require	=> Package["subversion"],
 		}
 
