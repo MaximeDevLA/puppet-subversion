@@ -18,7 +18,7 @@ Check out a subversion repository to a working directory
 `$password` (optional)	- Password to connect with  
 `$revision` (optional)	- Revision to check out  
 `$trustcert` (optional)	- Use --trust-server-cert  
-`$noauthcache` (optional) - Use --no-auth-cache
+`$noauthcache` (optional) - Use --no-auth-cache  
 `$forceoverwrite` (optional)  - Overwrite existing directories and files on export
 
 
