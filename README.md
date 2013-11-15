@@ -19,7 +19,7 @@ Check out a subversion repository to a working directory
 `$revision` (optional)	- Revision to check out  
 `$trustcert` (optional)	- Use --trust-server-cert  
 `$noauthcache` (optional) - Use --no-auth-cache
-`$forceoverwrite (optional)  - Overwrite existing directories and files on exportche
+`$forceoverwrite` (optional)  - Overwrite existing directories and files on exportche
 
 
 ## Sample usage
